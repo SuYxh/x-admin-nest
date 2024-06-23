@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id
+  userName    String   @unique
+  nickName    String
+  password    String
+  phoneNumber String   @unique
+  email       String   @unique
+  avatar      String?
+  sex         Int?
+  createdAt   DateTime @default(now())
+  updateAt    DateTime @updatedAt()
+  user_Role   User_Role[]
+  
+}
+
+model File {
+  id       String @id @default(uuid())
+  fileName String 
+  filePath String  
+  userId String?
+  createdAt DateTime @default(now())
+
+  @@unique([userId])
+}
+
+model Role {
+  id        String        @id @default(uuid())
+  name      String
+  code      String      @unique
+  createdAt DateTime    @default(now())
+  Role_Menu Role_Menu[]
+  User_Role User_Role[]
+}
+model Menu {
+  id          String         @id @default(uuid())
+  name        String?
+  parentId    String?
+  icon        String?
+  type        Int
+  route       String?
+  filePath    String?
+  orderNumber Int?
+  url         String?
+  show        Boolean?
+  authCode    String?
+  Role_Menu   Role_Menu[]
+  createdAt   DateTime    @default(now())
+  updateAt    DateTime    @updatedAt()
+}
+
+model Role_Menu {
+  id     String  @id @default(uuid())
+  roleId String
+  menuId String
+  role   Role @relation(fields: [roleId], references: [id])
+  menu   Menu @relation(fields: [menuId], references: [id])
+  @@unique([roleId, menuId])
+}
+
+model User_Role {
+  id String @id @default(uuid())
+  roleId String
+  role   Role @relation(fields: [roleId], references: [id])
+  userId String
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([roleId, userId])
+}
+
+model Login_Log {
+  id String @id @default(uuid())
+  userName String?
+  ip  String?
+  address String?
+  browser String?
+  os String?
+  status Boolean?
+  message String?
+  createAt DateTime @default(now())
+ } 
+
